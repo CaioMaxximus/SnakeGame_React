@@ -24,8 +24,11 @@ class Grade extends Component{
                 column : 4
             },{
                 row : 4,
-                column : 5}],
-            movesHistory : ['left','left']
+                column : 5},
+            {
+                row : 4,
+                column : 6}],
+            movesHistory : ['left','left','left']
         }
 
     }
@@ -38,12 +41,8 @@ class Grade extends Component{
             let square = body[i]
             console.log(moves)
             const direction = moves[i]
-            // if(i === 0){
-            //     moves.push(direction)
-            // }            
             this.controlDirection(direction,square);
             
-
         }
         moves = this.state.movesHistory.slice()
         moves = this.transform_moves()
@@ -51,15 +50,15 @@ class Grade extends Component{
         console.log(moves)
         setTimeout(() => {
             this.game()
-        }, 1000);
+        }, 500);
 
     }
 
     transform_moves(){
         let moves = this.state.movesHistory.slice()
 
-        for (let i = 0; i < moves.length - 1 ; i ++){
-            moves[i + 1] = moves[i]
+        for (let i = moves.length - 1; i > 0 ; i --){
+            moves[i] = moves[i - 1]
              
         }
         return moves
@@ -170,6 +169,25 @@ class Grade extends Component{
     }
 
     render(){
+        function keyPressed(evt){
+            evt = evt || window.event;
+            var key = evt.keyCode || evt.which;
+            return String.fromCharCode(key); 
+        }
+        
+        document.onkeypress = (evt) =>{
+            var str = keyPressed(evt);
+            console.log(str)
+            if(str === 'w')
+                this.changeDirection('up')    
+            else if(str === 'a')
+                this.changeDirection('left')
+            else if(str === 'd'){
+                this.changeDirection('right')
+            }else if(str === 's'){
+                this.changeDirection('down')
+            }
+        } 
         let index = 0
 
         return <div className = 'grade' > 
@@ -187,14 +205,11 @@ class Grade extends Component{
         })}
         <button onClick = {()=> this.game()}>START</button>
         <br/>
-            <div>
-            <button onClick = {()=> {this.changeDirection('left')}}>LEFT_</button>
-            <button onClick = {()=> {this.changeDirection('right')}}>RIGHT</button>
-            <button onClick = {()=> {this.changeDirection('up')}}>_UP__</button>
-            <button onClick = {()=> {this.changeDirection('down')}}>DOWN_</button>
-            </div>
+            
         </div>
     }
 }
+
+
 
 export default Grade;
