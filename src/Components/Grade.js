@@ -15,54 +15,114 @@ class Grade extends Component{
             }
             pixels.push(row)
         }
+
         this.state = {
             pixels : pixels,
-            direction : null
+            
+            body : [{
+                row : 4,
+                column : 4
+            },{
+                row : 4,
+                column : 5}],
+            movesHistory : ['left','left']
         }
-        console.log(this.state.pixels)
+
     }
 
-    controlDirection(row,column){
+    game(){
 
-        const direction = this.state.direction
+        const body = this.state.body.slice()
+        let moves = this.state.movesHistory.slice()
+        for(let i = 0;i < body.length; i++){    
+            let square = body[i]
+            console.log(moves)
+            const direction = moves[i]
+            // if(i === 0){
+            //     moves.push(direction)
+            // }            
+            this.controlDirection(direction,square);
+            
+
+        }
+        moves = this.state.movesHistory.slice()
+        moves = this.transform_moves()
+        this.setState({movesHistory: moves})
+        console.log(moves)
+        setTimeout(() => {
+            this.game()
+        }, 1000);
+
+    }
+
+    transform_moves(){
+        let moves = this.state.movesHistory.slice()
+
+        for (let i = 0; i < moves.length - 1 ; i ++){
+            moves[i + 1] = moves[i]
+             
+        }
+        return moves
+    }
+
+    controlDirection(direction,square){
+
+        console.log('control direction')
+        let row = square.row
+        let column =  square.column
+
+
         switch(direction){
             case ('up'):
-                this.movePixelUp(row - 1,column)
+                this.movePixelUp(row - 1,column,square)
+                square.row = row -1
+                square.column = column
                 break
             case ('down'):
-                this.movePixelDown(row + 1,column)
+                this.movePixelDown(row + 1,column,square)
+                square.row = row +1
+                square.column = column
                 break
             case ('left'):
-                this.movePixelLeft(row,column - 1)
+                this.movePixelLeft(row,column - 1,square)
+                square.row = row
+                square.column = column - 1
                 break
             case ('right'):
-                this.movePixelRight(row,column + 1)
+                this.movePixelRight(row,column + 1,square)
+                square.row = row
+                square.column = column + 1
                 break
             default:
                 break
         }
+        
 
 
     }
 
     changeDirection(direction){
 
+        
+        
+        let moves = this.state.movesHistory.slice()
+        moves[0] = direction
+
         this.setState({
-            direction : direction
+            movesHistory: moves
+            
         })
     }
+
     movePixelLeft(row,column){
         const pixels= this.state.pixels.slice()
 
-        pixels[row][column] = 'X'
-        pixels[row][column + 1] = '.'
-        this.setState({
-            pixels : pixels
-        })
-        if(column > 0 ){
-            setTimeout(() => {
-                this.controlDirection(row , column)
-            }, 500);
+        if(column > 0 ){   
+            pixels[row][column] = 'X'
+            pixels[row][column + 1] = '.'
+            this.setState({
+                pixels : pixels
+            })        
         }
         
     }
@@ -70,15 +130,13 @@ class Grade extends Component{
     movePixelRight(row,column){
         const pixels= this.state.pixels.slice()
 
-        pixels[row][column] = 'X'
-        pixels[row][column -1] = '.'
-        this.setState({
-            pixels : pixels
-        })
         if(column < 9){
-            setTimeout(() => {
-                this.controlDirection(row , column)
-            }, 500);
+            pixels[row][column] = 'X'
+            pixels[row][column -1] = '.'
+            this.setState({
+                pixels : pixels
+            })
+            
         }
         
     }
@@ -86,31 +144,27 @@ class Grade extends Component{
     movePixelUp(row,column){
         const pixels= this.state.pixels.slice()
 
-        pixels[row][column] = 'X'
-        pixels[row + 1][column] = '.'
-        this.setState({
-            pixels : pixels
-        })
         if(row > 0){
-            setTimeout(() => {
-                this.controlDirection(row , column)
-            }, 500);
+            pixels[row][column] = 'X'
+            pixels[row + 1][column] = '.'
+            this.setState({
+                pixels : pixels
+            })
         }
+        
+ 
         
     }
 
     movePixelDown(row,column){
         const pixels= this.state.pixels.slice()
-
-        pixels[row][column] = 'X'
-        pixels[row - 1][column] = '.'
-        this.setState({
-            pixels : pixels
-        })
+        
         if(row < 9){
-            setTimeout(() => {
-                this.controlDirection(row , column)
-            }, 500);
+            pixels[row][column] = 'X'
+            pixels[row - 1][column] = '.'
+            this.setState({
+                pixels : pixels
+            })        
         }
         
     }
@@ -125,12 +179,13 @@ class Grade extends Component{
                         index += 1
                     return <Pixel val = {pixel}
                                 key = {index}
-                                onClick = {() =>{
-                                    this.movePixelDown(indexRow,indexColumn)}}
+                                // onClick = {() =>{
+                                //     this.movePixelDown(indexRow,indexColumn)}}
                             ></Pixel>})}
             </div> 
 
         })}
+        <button onClick = {()=> this.game()}>START</button>
         <br/>
             <div>
             <button onClick = {()=> {this.changeDirection('left')}}>LEFT_</button>
