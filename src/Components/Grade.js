@@ -10,7 +10,7 @@ class Grade extends Component{
         for (let index = 0; index < 10; index++) {
             let row = []
             for (let j = 0; j < 10; j++) {
-                row.push('.')
+                row.push('white')
                 
             }
             pixels.push(row)
@@ -50,7 +50,7 @@ class Grade extends Component{
         console.log(moves)
         setTimeout(() => {
             this.game()
-        }, 500);
+        }, 200);
 
     }
 
@@ -117,8 +117,8 @@ class Grade extends Component{
         const pixels= this.state.pixels.slice()
 
         if(column > 0 ){   
-            pixels[row][column] = 'X'
-            pixels[row][column + 1] = '.'
+            pixels[row][column] = 'blue'
+            pixels[row][column + 1] = 'white'
             this.setState({
                 pixels : pixels
             })        
@@ -130,8 +130,8 @@ class Grade extends Component{
         const pixels= this.state.pixels.slice()
 
         if(column < 9){
-            pixels[row][column] = 'X'
-            pixels[row][column -1] = '.'
+            pixels[row][column] = 'blue'
+            pixels[row][column -1] = 'white'
             this.setState({
                 pixels : pixels
             })
@@ -144,8 +144,8 @@ class Grade extends Component{
         const pixels= this.state.pixels.slice()
 
         if(row > 0){
-            pixels[row][column] = 'X'
-            pixels[row + 1][column] = '.'
+            pixels[row][column] = 'blue'
+            pixels[row + 1][column] = 'white'
             this.setState({
                 pixels : pixels
             })
@@ -159,8 +159,8 @@ class Grade extends Component{
         const pixels= this.state.pixels.slice()
         
         if(row < 9){
-            pixels[row][column] = 'X'
-            pixels[row - 1][column] = '.'
+            pixels[row][column] = 'blue'
+            pixels[row - 1][column] = 'white'
             this.setState({
                 pixels : pixels
             })        

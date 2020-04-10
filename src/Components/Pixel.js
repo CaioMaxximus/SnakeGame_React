@@ -1,9 +1,15 @@
 import React ,{Component} from 'react';
-
+import './style.css'  
 class Pixel extends Component{
 
+
+
     render(){
-        return <button onClick = {this.props.onClick}> {this.props.val}</button>
+        const colorStyle = {
+            backgroundColor : this.props.val
+        }
+        return <div className = 'pixel'
+        style = {colorStyle}></div>
     }
 }
 
