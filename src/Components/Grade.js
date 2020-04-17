@@ -18,25 +18,30 @@ class Grade extends Component{
 
         this.state = {
             pixels : pixels,
-            
+            point : false,
             body : [{
                 row : 4,
                 column : 4
-            },{
-                row : 4,
-                column : 5},
-            {
-                row : 4,
-                column : 6}],
-            movesHistory : ['left','left','left']
+            }],
+            movesHistory : ['left'],
+            status: 'playing'
         }
 
     }
 
     game(){
 
+        if(this.state.point === true){
+            this.addBody()
+            this.setState({
+                point : false
+            })
+            this.generateRedPixels()
+        }
+
         const body = this.state.body.slice()
         let moves = this.state.movesHistory.slice()
+        
         for(let i = 0;i < body.length; i++){    
             let square = body[i]
             console.log(moves)
@@ -47,10 +52,11 @@ class Grade extends Component{
         moves = this.state.movesHistory.slice()
         moves = this.transform_moves()
         this.setState({movesHistory: moves})
-        console.log(moves)
-        setTimeout(() => {
-            this.game()
-        }, 200);
+        if(this.state.status === 'playing')
+            setTimeout(() => {
+                this.game()
+            }, 400);
+        
 
     }
 
@@ -64,9 +70,24 @@ class Grade extends Component{
         return moves
     }
 
+    generateRedPixels(){
+
+        let valid = false
+        const pixels = this.state.pixels.slice()
+        let size = this.state.pixels.length - 1
+        while(!valid){
+
+            let row = Math.floor(Math.random() * size) 
+            let col = Math.floor(Math.random() * size)
+            if(pixels[row][col] !== 'blue'){
+                valid = true
+                pixels[row][col] = 'red'
+            }
+        }
+    }
+
     controlDirection(direction,square){
 
-        console.log('control direction')
         let row = square.row
         let column =  square.column
 
@@ -95,9 +116,65 @@ class Grade extends Component{
             default:
                 break
         }
-        
 
+    }
 
+    addBody(){
+        let body = this.state.body.slice()
+        let moves = this.state.movesHistory.slice()
+        let tail = body[body.length -1]
+        let direction = moves[moves.length -1]
+        let row = tail.row
+        let col = tail.column
+        switch(direction){
+            case('up'):
+                row = row + 1
+                break
+            case('down'):
+                row = row - 1
+                break
+            case('left'):
+                col = col + 1
+                break
+            case('right'):
+                col = col - 1
+                break
+            default:
+                break
+
+        }
+        let newTail= {
+            row : row,
+            column :  col
+        }
+        moves.push(moves[moves.length -1])
+        body.push(newTail)
+        this.setState({
+            body : body,
+            movesHistory : moves
+        })
+    }
+
+    verifyColision(row ,col){
+
+        const pixels = this.state.pixels.slice()
+
+        let size = 9//this.props.size 
+        if(row > size || col > size
+            || row < 0 || col < 0
+            || pixels[row][col] === 'blue') 
+        {
+            this.setState({
+                status : 'over'
+            })
+            return false
+        }
+        else if(pixels[row][col] === 'red'){
+            this.setState({
+                point : true
+            })
+        }
+        return true
     }
 
     changeDirection(direction){
@@ -105,51 +182,60 @@ class Grade extends Component{
         
         
         let moves = this.state.movesHistory.slice()
-        moves[0] = direction
+        let moveNow = moves[0]
+        if((moveNow === 'left' && direction !== 'right') 
+            || (moveNow === 'right' && direction !== 'left') 
+            || (moveNow === 'up' && direction !== 'down')
+            || (moveNow === 'down' && direction !== 'up')){
 
-        this.setState({
-            movesHistory: moves
-            
-        })
+                moves[0] = direction
+                this.setState({
+                    movesHistory: moves
+                    
+                })
+        }
+
+
+
     }
 
     movePixelLeft(row,column){
         const pixels= this.state.pixels.slice()
 
-        if(column > 0 ){   
+        if(this.verifyColision(row,column))
             pixels[row][column] = 'blue'
             pixels[row][column + 1] = 'white'
             this.setState({
                 pixels : pixels
             })        
-        }
+        
         
     }
 
     movePixelRight(row,column){
         const pixels= this.state.pixels.slice()
 
-        if(column < 9){
-            pixels[row][column] = 'blue'
-            pixels[row][column -1] = 'white'
-            this.setState({
-                pixels : pixels
-            })
+        if(this.verifyColision(row,column))
+        pixels[row][column] = 'blue'
+        pixels[row][column -1] = 'white'
+        this.setState({
+            pixels : pixels
+        })
             
-        }
+        
         
     }
 
     movePixelUp(row,column){
         const pixels= this.state.pixels.slice()
 
-        if(row > 0){
+        if(this.verifyColision(row,column))
             pixels[row][column] = 'blue'
             pixels[row + 1][column] = 'white'
             this.setState({
                 pixels : pixels
             })
-        }
+        
         
  
         
@@ -158,14 +244,12 @@ class Grade extends Component{
     movePixelDown(row,column){
         const pixels= this.state.pixels.slice()
         
-        if(row < 9){
+        if(this.verifyColision(row,column))
             pixels[row][column] = 'blue'
             pixels[row - 1][column] = 'white'
             this.setState({
                 pixels : pixels
-            })        
-        }
-        
+            })               
     }
 
     render(){
@@ -190,22 +274,19 @@ class Grade extends Component{
         } 
         let index = 0
 
-        return <div className = 'grade' > 
-            {this.state.pixels.map((row,indexRow)=>{
-                return <div className = 'row' key = {index}>
-                    {row.map((pixel, indexColumn)=>{
-                        index += 1
-                    return <Pixel val = {pixel}
-                                key = {index}
-                                // onClick = {() =>{
-                                //     this.movePixelDown(indexRow,indexColumn)}}
-                            ></Pixel>})}
-            </div> 
-
-        })}
-        <button onClick = {()=> this.game()}>START</button>
-        <br/>
-            
+        return <div >      
+            <div className = 'grade' >
+                {this.state.pixels.map((row,indexRow)=>{
+                    return <div className = 'row' key = {index}>
+                        {row.map((pixel, indexColumn)=>{
+                            index += 1
+                        return <Pixel val = {pixel}
+                                    key = {index}
+                                ></Pixel>})}
+                </div>})}
+            </div>
+            <button onClick = {() => { this.game() ;  this.generateRedPixels()}}>START</button>
+            <br/>
         </div>
     }
 }
