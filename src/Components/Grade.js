@@ -24,13 +24,29 @@ class Grade extends Component{
                 column : 4
             }],
             movesHistory : ['left'],
-            status: 'playing'
+            playing : false,
+            teste : "test"
         }
 
     }
 
+    controler(){
+
+        if(!this.state.playing){
+            this.setState({
+                playing : true, // nao esta cumprind o set do estado!!!
+                teste : "testado"
+            },this.game())
+            this.generateRedPixels()
+            
+        }
+    }
+
     game(){
 
+        console.log(this.state.playing,"setando estado do playing")
+        
+        console.log("setado!")
         if(this.state.point === true){
             this.addBody()
             this.setState({
@@ -38,25 +54,26 @@ class Grade extends Component{
             })
             this.generateRedPixels()
         }
-
+        console.log("game")
         const body = this.state.body.slice()
         let moves = this.state.movesHistory.slice()
         
         for(let i = 0;i < body.length; i++){    
             let square = body[i]
-            console.log(moves)
             const direction = moves[i]
             this.controlDirection(direction,square);
             
         }
+        console.log("moves ok")
         moves = this.state.movesHistory.slice()
-        moves = this.transform_moves()
-        this.setState({movesHistory: moves})
-        if(this.state.status === 'playing')
+        this.transform_moves()
+        console.log(this.state.playing)
+        if(this.state.playing)
             setTimeout(() => {
                 this.game()
-            }, 400);
-        
+            }, 300);
+        console.log(this.state.teste)
+
 
     }
 
@@ -67,7 +84,9 @@ class Grade extends Component{
             moves[i] = moves[i - 1]
              
         }
-        return moves
+        console.log({moves})
+        this.setState({movesHistory: moves})
+
     }
 
     generateRedPixels(){
@@ -90,6 +109,8 @@ class Grade extends Component{
 
         let row = square.row
         let column =  square.column
+
+        console.log("control direction!" , direction , square)
 
 
         switch(direction){
@@ -165,8 +186,8 @@ class Grade extends Component{
             || pixels[row][col] === 'blue') 
         {
             this.setState({
-                status : 'over'
-            })
+                playing : false
+            },console.log("colidiu"))
             return false
         }
         else if(pixels[row][col] === 'red'){
@@ -203,6 +224,7 @@ class Grade extends Component{
         const pixels= this.state.pixels.slice()
 
         if(this.verifyColision(row,column))
+            console.log("moving the pixel", row, column)
             pixels[row][column] = 'blue'
             pixels[row][column + 1] = 'white'
             this.setState({
@@ -261,7 +283,6 @@ class Grade extends Component{
         
         document.onkeypress = (evt) =>{
             var str = keyPressed(evt);
-            console.log(str)
             if(str === 'w')
                 this.changeDirection('up')    
             else if(str === 'a')
@@ -285,7 +306,7 @@ class Grade extends Component{
                                 ></Pixel>})}
                 </div>})}
             </div>
-            <button onClick = {() => { this.game() ;  this.generateRedPixels()}}>START</button>
+            <button onClick = {() => { this.controler()}}>START</button>
             <br/>
         </div>
     }
