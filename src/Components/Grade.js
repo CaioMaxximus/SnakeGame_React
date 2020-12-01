@@ -1,5 +1,6 @@
 import React ,{Component} from 'react';
 import Pixel from './Pixel';
+import MessageScreen from './MessageScreen';
 
 
 class Grade extends Component{
@@ -25,18 +26,21 @@ class Grade extends Component{
             }],
             movesHistory : ['left'],
             playing : false,
-            teste : "test"
         }
 
     }
 
     controler(){
 
+      
+
         if(!this.state.playing){
             this.setState({
                 playing : true, // nao esta cumprind o set do estado!!!
                 teste : "testado"
-            },this.game())
+            }) 
+            setTimeout(() => {
+                this.game()},3000)
             this.generateRedPixels()
             
         }
@@ -44,9 +48,7 @@ class Grade extends Component{
 
     game(){
 
-        console.log(this.state.playing,"setando estado do playing")
-        
-        console.log("setado!")
+
         if(this.state.point === true){
             this.addBody()
             this.setState({
@@ -54,7 +56,6 @@ class Grade extends Component{
             })
             this.generateRedPixels()
         }
-        console.log("game")
         const body = this.state.body.slice()
         let moves = this.state.movesHistory.slice()
         
@@ -64,15 +65,18 @@ class Grade extends Component{
             this.controlDirection(direction,square);
             
         }
-        console.log("moves ok")
         moves = this.state.movesHistory.slice()
         this.transform_moves()
-        console.log(this.state.playing)
         if(this.state.playing)
             setTimeout(() => {
                 this.game()
             }, 300);
-        console.log(this.state.teste)
+        else{
+            this.setState({
+                
+            })
+        }
+
 
 
     }
@@ -295,7 +299,9 @@ class Grade extends Component{
         } 
         let index = 0
 
-        return <div >      
+        return <div >  
+            <MessageScreen  visible = {!this.state.playing}>
+           </MessageScreen>    
             <div className = 'grade' >
                 {this.state.pixels.map((row,indexRow)=>{
                     return <div className = 'row' key = {index}>
