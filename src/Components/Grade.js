@@ -26,6 +26,7 @@ class Grade extends Component{
             }],
             movesHistory : ['left'],
             playing : false,
+            initialTimer : 4
         }
 
     }
@@ -36,7 +37,7 @@ class Grade extends Component{
 
         if(!this.state.playing){
             this.setState({
-                playing : true, // nao esta cumprind o set do estado!!!
+                playing : true,
                 teste : "testado"
             }) 
             setTimeout(() => {
@@ -300,7 +301,8 @@ class Grade extends Component{
         let index = 0
 
         return <div >  
-            <MessageScreen  visible = {!this.state.playing}>
+            <MessageScreen  visible = {!this.state.playing} 
+            >
            </MessageScreen>    
             <div className = 'grade' >
                 {this.state.pixels.map((row,indexRow)=>{

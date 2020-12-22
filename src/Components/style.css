@@ -10,10 +10,13 @@
 
     position: absolute;
     margin: auto 0;
-    background-color: aqua;
+    display: flex;
+    flex-direction: column;
+    background-color: rgb(67, 62, 105);
     border: 1px solid black;
-    width: 300px;
-    height:  250px;
+    opacity: 0.95;
+    width: 260px;
+    height:  260px;
 
 }
 
@@ -23,10 +26,14 @@
     margin : 1rem;
     width : auto;
     height : 3rem;
-
+    font-size: 2rem;
 
 }
 
-#message div{
+#message #content{
+
+    text-align: center;
+    justify-content: center;
+    font-size: 5rem;
 
 }
